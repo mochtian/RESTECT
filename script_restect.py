@@ -45,7 +45,7 @@ def build_payload(variable_1, variable_2, variable_3):
     
     buzzer = 0
     #print(button)
-    if gas == 0:                 #When output from LPG sensor is LOW  
+    if gas == 0: 
         print("Gas Aman",gas)
         time.sleep(0.5)
         try:
@@ -56,7 +56,7 @@ def build_payload(variable_1, variable_2, variable_3):
         if button == 0:
             buzzer = 0
             GPIO.output(23, GPIO.LOW)
-    elif gas == 1:               #When output from LPG sensor is HIGH  
+    elif gas == 1:
     #print("Intruder detected",i)
         SetAngle(90)
         time.sleep(0.3)
