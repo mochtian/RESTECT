@@ -1,10 +1,14 @@
 import RPi.GPIO as GPIO  
 import time
 import requests
+from ubidots import ApiClient
 from time import sleep
 from signal import signal, SIGTERM, SIGHUP, pause
 from rpi_lcd import LCD
 from datetime import datetime
+
+api = ApiClient(token="BBFF-GVmjrx5Im4qO2gtC2WUQ9fQRR0ckbE")
+tombol_servo = api.get_variable("631fe8a7a5901e000e7d5391")
 
 TOKEN = "BBFF-GVmjrx5Im4qO2gtC2WUQ9fQRR0ckbE"
 DEVICE_LABEL = "RESTECT" 
@@ -25,9 +29,9 @@ GPIO.setup(17, GPIO.OUT) #servo
 pwm=GPIO.PWM(17, 50)
 pwm.start(0)
 lcd = LCD()
-
+        
 def build_payload(variable_1, variable_2, variable_3):
-
+                
     def SetAngle(angle):
         duty = angle / 18 + 2
         GPIO.output(17, True)
@@ -45,7 +49,7 @@ def build_payload(variable_1, variable_2, variable_3):
     
     buzzer = 0
     #print(button)
-    if gas == 0: 
+    if gas == 0:                 #When output from LPG sensor is LOW  
         print("Gas Aman",gas)
         time.sleep(0.5)
         try:
@@ -56,7 +60,7 @@ def build_payload(variable_1, variable_2, variable_3):
         if button == 0:
             buzzer = 0
             GPIO.output(23, GPIO.LOW)
-    elif gas == 1:
+    elif gas == 1:               #When output from LPG sensor is HIGH  
     #print("Intruder detected",i)
         SetAngle(90)
         time.sleep(0.3)
@@ -91,6 +95,11 @@ def build_payload(variable_1, variable_2, variable_3):
             pass
         print("Api Padam")
     sleep(1)
+
+    last_value = tombol_servo.get_values(1) 
+    if last_value[0].get("value") == 1:
+        GPIO.output(23, GPIO.LOW)
+        print("alarm berhasil dimatikan")
      
     payload = {variable_1:gas, variable_2:flame, variable_3:buzzer}
     return payload
@@ -128,7 +137,7 @@ def main():
     print("[INFO] finished")
 
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     while (True):
         main()
         time.sleep(1)
